@@ -11,7 +11,7 @@ int main(void) {
     int characterCount = 0;
     char characters;
 
-    while (characters = fgetc(file) != EOF) {
+    while (fscanf(file, "%c", &characters) == 1) {
         if (characters >= 'A' && characters <= 'Z') {
             characterCount++;
         }
