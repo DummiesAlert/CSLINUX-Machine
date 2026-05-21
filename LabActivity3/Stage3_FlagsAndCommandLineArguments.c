@@ -9,20 +9,23 @@ int main(int argc, char *argv[]) {
     int flagB = 0;
     int flagC = 0;
 
-    printf("Begin: ");
+    printf("Arguments: \n");
 
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             for (int j = 1; argv[i][j] != '\0'; j++) {
+                
+                printf("Flag found: %s\n", argv[i]);
+
                 switch (argv[i][j]) {
                     case 'a':
-                        flagA = 1;
+                        printf("Flag found: -a \n");
                         break;
                     case 'b':
-                        flagB = 1;
+                        printf("Flag found: -b \n");
                         break;
                     case 'c':
-                        flagC = 1;
+                        printf("Flag found: -c \n");
                         break;
                     default:
                         printf("Error/Unknown flag: -%c\n", argv[i][j]);
@@ -33,11 +36,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (flagA) printf("Flag found: -a ");
-    if (flagB) printf("Flag found: -b ");
-    if (flagC) printf("Flag found: -c ");
-    printf("\n");
-
     return 0;
 }
 
@@ -46,8 +44,15 @@ int main(int argc, char *argv[]) {
 Output:
 
 gcc Stage3_FlagsAndCommandLineArguments.c -o 3.out
-./3.out -a banana and -b cookie
+./3.out -a banana -ab and cookie
 
-Argument 2: and
+Arguments:
+Argument 2: banana
+Argument 4: banana
+Argument 5: banana
+
+Flags:
+Flag found: -a
+Flag found: -b
 
 */
