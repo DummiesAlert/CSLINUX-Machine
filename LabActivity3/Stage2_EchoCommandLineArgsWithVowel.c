@@ -18,11 +18,9 @@ int main(int argc, char *argv[]) {
 
 Output:
 
-gcc Stage1_EchoCommandLineArgs.c -o 1.out
+gcc Stage2_EchoCommandLineArgsWithVowel.c -o 2.out
 ./2.out banana and cookie
 
-Argument 1: banana
 Argument 2: and
-Argument 3: cookie
 
 */
