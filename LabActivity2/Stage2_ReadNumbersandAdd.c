@@ -8,7 +8,9 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    int total = 0, number;
+    int total = 0; 
+    int number;
+    
     while (fscanf(file, "%d", &number) == 1) {
         total += number;
     }
