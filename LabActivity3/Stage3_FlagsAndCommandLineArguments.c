@@ -1,0 +1,1 @@
+// Write a C program which takes several flags (-a, -b, and -c) and prints which flags were set on the command line and echoes all other command line arguments. You should handle both separate flags being set -a -b abd grouped flags -ab.
