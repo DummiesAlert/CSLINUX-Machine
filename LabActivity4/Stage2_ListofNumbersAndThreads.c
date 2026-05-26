@@ -1,0 +1,2 @@
+// Wrtie a C program which takes list of numbers (all less than 100) for its argument. Then it starts as many threads as there are numbers and in each
+    // thread it counts down from the number given to 0, then ends.

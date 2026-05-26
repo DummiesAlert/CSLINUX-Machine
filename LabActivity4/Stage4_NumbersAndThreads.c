@@ -1,0 +1,3 @@
+// Write a C program which takes a number n for its argument. It then creates n "Racers", each with their own thread and ID. Each racer will print
+    // their ID and then should loop, incrementing a global counter. The race ends when one racer increments the global counter. The race ends when
+    // one racer increments the global counter over 1,000,000. Print the racer which won and the value of the counter
