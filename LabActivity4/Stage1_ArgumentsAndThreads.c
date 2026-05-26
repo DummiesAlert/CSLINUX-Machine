@@ -19,8 +19,33 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < num; i++) {
-        pthread_join(threads[i], NULL)
+        pthread_join(threads[i], NULL);
     }
 
     return 0;
-}
+} 
+
+/*
+
+Output: 
+
+gcc Stage1_ArgumentsAndThreads.c -o 1.out
+./1.out 16
+
+This is Thread 9
+This is Thread 10
+This is Thread 3
+This is Thread 6
+This is Thread 11
+This is Thread 12
+This is Thread 2
+This is Thread 7
+This is Thread 8
+This is Thread 13
+This is Thread 14
+This is Thread 15
+This is Thread 5
+This is Thread 1
+This is Thread 4
+This is Thread 0
+*/
