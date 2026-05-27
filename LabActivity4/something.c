@@ -1,87 +1,67 @@
-//Question 3:
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 
-typedef struct {
-    int *array;
-    int size; 
-} ThreadData;
+long global_counter = 0;
+int winner_id = -1;
+long winning_value = 0;
+pthread_mutex_t lock;
 
-void sort_array(int *arr, int size) {
-    for (int i = 0; i < size - 1; i++) {
-        for (int j = i + 1; j < size; j++) {
-            if (arr[i] > arr[j]) {
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
-            }
+void *racer(void *arg) {
+    long id = (long)arg;
+    printf("Racer %ld has joined the race!\n", id);
+
+    while (1) {
+        pthread_mutex_lock(&lock);
+
+        if (global_counter >= 1000000) {
+            pthread_mutex_unlock(&lock);
+            break;
         }
-    }
-}
 
-void *worker(void *arg) {
-    ThreadData *data = (ThreadData *)arg;
-    sort_array(data->array, data->size);
+        global_counter++;
+
+        if (global_counter >= 1000000 && winner_id == -1) {
+            winner_id = (int)id;
+            winning_value = global_counter;
+        }
+
+        pthread_mutex_unlock(&lock);
+    }
+
     return NULL;
 }
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Error: Please provide a list of numbers.\n");
+        printf("Error: Please provide the number of racers.\n");
         return 1;
     }
 
-    int total_elements = argc - 1;
-    int *full_array = malloc(total_elements * sizeof(int));
-
-    for (int i = 0; i < total_elements; i++) {
-        full_array[i] = atoi(argv[i + 1]);
+    int n = atoi(argv[1]);
+    if (n <= 0) {
+        printf("Error: Please provide a valid positive integer.\n");
+        return 1;
     }
 
-    int mid = total_elements / 2;
-    int size1 = mid;
-    int size2 = total_elements - mid;
+    pthread_t threads[n];
+    pthread_mutex_init(&lock, NULL);
 
-    ThreadData thread1_data = { &full_array[0], size1 };
-    ThreadData thread2_data = { &full_array[mid], size2 };
 
-    pthread_t thread1, thread2;
+    for (long i = 0; i < n; i++) {
 
-    pthread_create(&thread1, NULL, worker, (void *)&thread1_data);
-    pthread_create(&thread2, NULL, worker, (void *)&thread2_data);
-
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
-
-    int *merged_array = malloc(total_elements * sizeof(int));
-    int i = 0, j = mid, k = 0;
-
-    while (i < mid && j < total_elements) {
-        if (full_array[i] <= full_array[j]) {
-            merged_array[k++] = full_array[i++];
-        } else {
-            merged_array[k++] = full_array[j++];
-        }
+        pthread_create(&threads[i], NULL, racer, (void *)(i + 1));
     }
 
-    while (i < mid) {
-        merged_array[k++] = full_array[i++];
+    for (int i = 0; i < n; i++) {
+        pthread_join(threads[i], NULL);
     }
 
-    while (j < total_elements) {
-        merged_array[k++] = full_array[j++];
-    }
+    printf("\n--- Race Results ---\n");
+    printf("Winner: Racer %d\n", winner_id);
+    printf("Final Counter Value: %ld\n", winning_value);
 
-    printf("Sorted array: ");
-    for (int idx = 0; idx < total_elements; idx++) {
-        printf("%d ", merged_array[idx]);
-    }
-    printf("\n");
-
-    free(full_array);
-    free(merged_array);
+    pthread_mutex_destroy(&lock);
 
     return 0;
 }

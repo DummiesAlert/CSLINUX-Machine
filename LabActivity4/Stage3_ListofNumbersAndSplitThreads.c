@@ -88,3 +88,14 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+/*
+
+Output3:
+
+gcc Stage3_ListofNumbersAndSplitThreads.c -o 3.out
+./3.out 1 23 5 4
+
+Sorted array: 1 4 5 23
+
+*/

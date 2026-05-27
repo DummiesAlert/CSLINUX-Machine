@@ -6,28 +6,28 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-long global_counter = 0;
-int winner_id = -1;
-long winning_value = 0;
+long globalCounter = 0;
+int winnerID = -1;
+long winningRacer = 0;
 pthread_mutex_t lock;
 
 void *racer(void *arg) {
     long id = (long)arg;
-    printf("Racer %ld has entered the race!\n", id);
+    printf("Racer %ld has joined the race!\n", id);
 
     while (1) {
         pthread_mutex_lock(&lock);
 
-        if (global_counter >= 1000000) {
+        if (globalCounter >= 1000000) {
             pthread_mutex_unlock(&lock);
             break;
         }
 
-        global_counter++;
+        globalCounter++;
 
-        if (global_counter >= 1000000 && winner_id == -1) {
-            winner_id = (int)id;
-            winning_value = global_counter;
+        if (globalCounter >= 1000000 && winnerID == -1) {
+            winnerID = (int)id;
+            winningRacer = globalCounter;
         }
 
         pthread_mutex_unlock(&lock);
@@ -42,28 +42,28 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int n = atoi(argv[1]);
-    if (n <= 0) {
+    int validRacer = atoi(argv[1]);
+    if (validRacer <= 0) {
         printf("Error: Please provide a valid positive integer.\n");
         return 1;
     }
 
-    pthread_t threads[n];
+    pthread_t threads[validRacer];
     pthread_mutex_init(&lock, NULL);
 
 
-    for (long i = 0; i < n; i++) {
+    for (long i = 0; i < validRacer; i++) {
 
         pthread_create(&threads[i], NULL, racer, (void *)(i + 1));
     }
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < validRacer; i++) {
         pthread_join(threads[i], NULL);
     }
 
     printf("\n--- Race Results ---\n");
-    printf("Winner: Racer %d\n", winner_id);
-    printf("Final Counter Value: %ld\n", winning_value);
+    printf("Winner: Racer %d\n", winnerID);
+    printf("Global Counter: %ld\n", winningRacer);
 
     pthread_mutex_destroy(&lock);
 
