@@ -47,12 +47,12 @@ int main(int argc, char *argv[]) {
             perror("pthread_create");
             return 1;
         }
-    }
 
-    for (long i = 0; i < count; i++) {
-        pthread_join(threads[i], NULL);
+        if (pthread_join(threads[i], NULL) != 0) {
+            perror("pthread_join");
+            return 1;
+        }
     }
-
     return 0;
 }
 
