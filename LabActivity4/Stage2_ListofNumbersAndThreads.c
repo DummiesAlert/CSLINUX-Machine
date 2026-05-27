@@ -1,8 +1,6 @@
 // Write a C program which takes list of numbers (all less than 100) for its argument. Then it starts as many threads as there are numbers and in each
     // thread it counts down from the number given to 0, then ends.
 
-// git pull origin main
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>

@@ -1,110 +1,90 @@
 // Write a C program which takes a list of numbers for its argument, it then splits that list in half and gives each half to a thread.
     // Within each thread, sort the numbers and return that to the main program. When both threads are finished, have the main program
-    // combine the results to produce a single sorted list. 
+    // combine the results to produce a single sorted list.
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-
 typedef struct {
     int *array;
     int size;
-} ThreadData;
+}
 
-// Sort function for each thread
-void *sort_half(void *arg) {
-    ThreadData *data = (ThreadData *)arg;
+ThreadNumbers;
 
-    // Simple bubble sort
-    for (int i = 0; i < data->size - 1; i++) {
-        for (int j = 0; j < data->size - i - 1; j++) {
-            if (data->array[j] > data->array[j + 1]) {
-                int temp = data->array[j];
-                data->array[j] = data->array[j + 1];
-                data->array[j + 1] = temp;
+void sortArray(int *arr, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arr[i] > arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
             }
         }
     }
+}
 
+void *threadWorkerrrrr(void *arg) {
+    ThreadNumbers *numbers = (ThreadNumbers *)arg;
+    sortArray(numbers->array, numbers->size);
     return NULL;
 }
 
-// Merge two sorted halves
-void merge(int left[], int leftSize,
-           int right[], int rightSize,
-           int result[]) {
-
-    int i = 0, j = 0, k = 0;
-
-    while (i < leftSize && j < rightSize) {
-        if (left[i] < right[j]) {
-            result[k++] = left[i++];
-        } else {
-            result[k++] = right[j++];
-        }
-    }
-
-    while (i < leftSize) {
-        result[k++] = left[i++];
-    }
-
-    while (j < rightSize) {
-        result[k++] = right[j++];
-    }
-}
-
 int main(int argc, char *argv[]) {
-
     if (argc < 2) {
-        printf("Usage: %s numbers...\n", argv[0]);
+        printf("Error: Please provide a list of numbers.\n");
         return 1;
     }
 
-    int total = argc - 1;
+    int total_elements = argc - 1;
+    int *full_array = malloc(total_elements * sizeof(int));
 
-    int numbers[total];
-
-    // Convert arguments to integers
-    for (int i = 0; i < total; i++) {
-        numbers[i] = atoi(argv[i + 1]);
+    for (int i = 0; i < total_elements; i++) {
+        full_array[i] = atoi(argv[i + 1]);
     }
 
-    // Split array in half
-    int mid = total / 2;
+    int mid = total_elements / 2;
+    int size1 = mid;
+    int size2 = total_elements - mid;
 
-    ThreadData firstHalf;
-    firstHalf.array = numbers;
-    firstHalf.size = mid;
+    ThreadNumbers thread1_data = { &full_array[0], size1 };
+    ThreadNumbers thread2_data = { &full_array[mid], size2 };
 
-    ThreadData secondHalf;
-    secondHalf.array = numbers + mid;
-    secondHalf.size = total - mid;
+    pthread_t thread1, thread2;
 
-    pthread_t t1, t2;
+    pthread_create(&thread1, NULL, threadWorkerrrrr, (void *)&thread1_data);
+    pthread_create(&thread2, NULL, threadWorkerrrrr, (void *)&thread2_data);
 
-    // Create threads
-    pthread_create(&t1, NULL, sort_half, &firstHalf);
-    pthread_create(&t2, NULL, sort_half, &secondHalf);
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
 
-    // Wait for threads
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
+    int *merged_array = malloc(total_elements * sizeof(int));
+    int i = 0, j = mid, k = 0;
 
-    // Merge sorted halves
-    int sorted[total];
-
-    merge(firstHalf.array, firstHalf.size,
-          secondHalf.array, secondHalf.size,
-          sorted);
-
-    // Print sorted array
-    printf("Sorted list: ");
-
-    for (int i = 0; i < total; i++) {
-        printf("%d ", sorted[i]);
+    while (i < mid && j < total_elements) {
+        if (full_array[i] <= full_array[j]) {
+            merged_array[k++] = full_array[i++];
+        } else {
+            merged_array[k++] = full_array[j++];
+        }
     }
 
+    while (i < mid) {
+        merged_array[k++] = full_array[i++];
+    }
+
+    while (j < total_elements) {
+        merged_array[k++] = full_array[j++];
+    }
+
+    printf("Sorted array: ");
+    for (int idx = 0; idx < total_elements; idx++) {
+        printf("%d ", merged_array[idx]);
+    }
     printf("\n");
+
+    free(full_array);
+    free(merged_array);
 
     return 0;
 }
