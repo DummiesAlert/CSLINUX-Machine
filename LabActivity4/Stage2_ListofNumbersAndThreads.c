@@ -46,14 +46,15 @@ int main(int argc, char *argv[]) {
             perror("pthread_create");
             return 1;
         }
-
-        for (int i = 0; i < count; i++) {
-            pthread_join(threads[i], NULL);
-        }
-
-        return 0;
     }
+
+    for (int i = 0; i < count; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    return 0;
 }
+
 
 /*
 
