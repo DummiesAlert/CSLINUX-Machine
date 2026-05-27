@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 
 /*
 
-Output: 
+Output:
 
 gcc Stage1_ArgumentsAndThreads.c -o 1.out
 ./1.out 16
