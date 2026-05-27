@@ -52,11 +52,11 @@ int main(int argc, char *argv[]) {
 
     pthread_t thread1, thread2;
 
-    pthread_create(&threadNumbers1, NULL, threadWorkerrrrr, (void *)&threadNumbers1);
-    pthread_create(&threadNumbers2, NULL, threadWorkerrrrr, (void *)&threadNumbers2);
+    pthread_create(&thread1, NULL, threadWorkerrrrr, (void *)&threadNumbers1);
+    pthread_create(&thread2, NULL, threadWorkerrrrr, (void *)&threadNumbers2);
 
-    pthread_join(threadNumbers1, NULL);
-    pthread_join(threadNumbers2, NULL);
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
 
     int *sortedArray = malloc(count * sizeof(int));
     int i = 0, j = arrayMiddle, k = 0;
