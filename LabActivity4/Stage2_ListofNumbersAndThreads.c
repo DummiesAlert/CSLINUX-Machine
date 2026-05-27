@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <pthread.h>
 
 typedef struct {
@@ -19,7 +18,6 @@ void *countdown(void *arg) {
 
     for (int i = number->numbers; i >= 0; i--) {
         printf("Thread %d: %d\n", number->threadNumber, i);
-        sleep(2);
     }
 
     return NULL;
@@ -35,7 +33,7 @@ int main(int argc, char *argv[]) {
     pthread_t threads[count];
     ThreadNumbers numbers[count];
 
-    for (int i = 0; i < count; i++) {
+    for (long i = 0; i < count; i++) {
         numbers[i].threadNumber = i;
         numbers[i].numbers = atoi(argv[i + 1]);
 
@@ -50,7 +48,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    for (int i = 0; i < count; i++) {
+    for (long i = 0; i < count; i++) {
         pthread_join(threads[i], NULL);
     }
 
