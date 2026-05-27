@@ -1,6 +1,8 @@
 // Write a C program which takes list of numbers (all less than 100) for its argument. Then it starts as many threads as there are numbers and in each
     // thread it counts down from the number given to 0, then ends.
 
+// git pull origin main
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -22,8 +24,7 @@ void *countdown(void *arg) {
 }
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Usage: %s <numbers...>\n", argv[0]);
-        // printf("Invalid or No Arguments are provided\n", argv[0]);
+        printf("Usage of: %s, Is Invalid or No Arguments are provided\n", argv[0]);
         return 1;
     }
 
@@ -36,9 +37,8 @@ int main(int argc, char *argv[]) {
         numbers[i].threadNumber = i;
         numbers[i].numbers = atoi(argv[i + 1]);
 
-        if (numbers[i].numbers < 0 || numbers[i].numbers >= 100) {
-            printf("Number must be >= 0 and less than 100! Number: %d\n", numbers[i].numbers);
-            // printf("Number is not less than 100!!!! \nNumber: %d\n", numbers[i]);
+        if (numbers[i].numbers < 0 || numbers[i].numbers >= 100)
+            printf("Number is not less than 100!!!! \nNumber: %d\n", numbers[i].numbers);
             return 1;
         }
 
@@ -46,8 +46,6 @@ int main(int argc, char *argv[]) {
             perror("pthread_create");
             return 1;
         }
-        // pthread_create(&threads[i], NULL, countdown, &numbers[i]);
-    }
 
     for (int i = 0; i < count; i++) {
         pthread_join(threads[i], NULL);
@@ -55,9 +53,10 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
 /*
 
-Output:
+Output2:
 
 gcc Stage2_ListofNumbersAndThreads.c -o 2.out -pthread
 ./2.out 5 10 15

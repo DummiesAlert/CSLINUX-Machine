@@ -23,11 +23,11 @@ int main(int argc, char *argv[]) {
     }
 
     return 0;
-} 
+}
 
 /*
 
-Output:
+Output1:
 
 gcc Stage1_ArgumentsAndThreads.c -o 1.out
 ./1.out 16
