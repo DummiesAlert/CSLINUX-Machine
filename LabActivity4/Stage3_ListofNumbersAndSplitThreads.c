@@ -32,59 +32,59 @@ void *threadWorkerrrrr(void *arg) {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Error: Please provide a list of numbers.\n");
+        printf("Error: Invalid Arguments Given. It must be a list of numbers.\n");
         return 1;
     }
 
-    int total_elements = argc - 1;
-    int *full_array = malloc(total_elements * sizeof(int));
+    int count = argc - 1;
+    int *arrayAllocate = malloc(count * sizeof(int));
 
-    for (int i = 0; i < total_elements; i++) {
-        full_array[i] = atoi(argv[i + 1]);
+    for (int i = 0; i < count; i++) {
+        arrayAllocate[i] = atoi(argv[i + 1]);
     }
 
-    int mid = total_elements / 2;
-    int size1 = mid;
-    int size2 = total_elements - mid;
+    int arrayMiddle = count / 2;
+    int size1 = arrayMiddle;
+    int size2 = count - arrayMiddle;
 
-    ThreadNumbers thread1_data = { &full_array[0], size1 };
-    ThreadNumbers thread2_data = { &full_array[mid], size2 };
+    ThreadNumbers thread1 = { &arrayAllocate[0], size1};
+    ThreadNumbers thread2 = { &arrayAllocate[arrayMiddle], size2};
 
     pthread_t thread1, thread2;
 
-    pthread_create(&thread1, NULL, threadWorkerrrrr, (void *)&thread1_data);
-    pthread_create(&thread2, NULL, threadWorkerrrrr, (void *)&thread2_data);
+    pthread_create(&thread1, NULL, threadWorkerrrrr, (void *)&thread1);
+    pthread_create(&thread2, NULL, threadWorkerrrrr, (void *)&thread2);
 
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
 
-    int *merged_array = malloc(total_elements * sizeof(int));
-    int i = 0, j = mid, k = 0;
+    int *sortedArray = malloc(count * sizeof(int));
+    int i = 0, j = arrayMiddle, k = 0;
 
-    while (i < mid && j < total_elements) {
-        if (full_array[i] <= full_array[j]) {
-            merged_array[k++] = full_array[i++];
+    while (i < arrayMiddle && j < count) {
+        if (arrayAllocate[i] <= arrayAllocate[j]) {
+            sortedArray[k++] = arrayAllocate[i++];
         } else {
-            merged_array[k++] = full_array[j++];
+            sortedArray[k++] = arrayAllocate[j++];
         }
     }
 
-    while (i < mid) {
-        merged_array[k++] = full_array[i++];
+    while (i < arrayMiddle) {
+        sortedArray[k++] = arrayAllocate[i++];
     }
 
-    while (j < total_elements) {
-        merged_array[k++] = full_array[j++];
+    while (j < count) {
+        sortedArray[k++] = arrayAllocate[j++];
     }
 
     printf("Sorted array: ");
-    for (int idx = 0; idx < total_elements; idx++) {
-        printf("%d ", merged_array[idx]);
+    for (int m = 0; m < count; m++) {
+        printf("%d ", sortedArray[m]);
     }
     printf("\n");
 
-    free(full_array);
-    free(merged_array);
+    free(arrayAllocate);
+    free(sortedArray);
 
     return 0;
 }
