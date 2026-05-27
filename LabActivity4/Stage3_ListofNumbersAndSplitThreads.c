@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     ThreadNumbers threadNumbers1 = { &arrayAllocate[0], size1};
     ThreadNumbers threadNumbers2 = { &arrayAllocate[arrayMiddle], size2};
 
-    pthread_t threadNumbers1, threadNumbers2;
+    pthread_t thread1, thread2;
 
     pthread_create(&threadNumbers1, NULL, threadWorkerrrrr, (void *)&threadNumbers1);
     pthread_create(&threadNumbers2, NULL, threadWorkerrrrr, (void *)&threadNumbers2);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     while (i < arrayMiddle && j < count) {
         if (arrayAllocate[i] <= arrayAllocate[j]) {
             sortedArray[k++] = arrayAllocate[i++];
-        } else {
+        } else {        
             sortedArray[k++] = arrayAllocate[j++];
         }
     }
