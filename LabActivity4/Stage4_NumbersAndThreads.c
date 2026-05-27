@@ -51,9 +51,9 @@ int main(int argc, char *argv[]) {
     pthread_t threads[validRacer];
     pthread_mutex_init(&lock, NULL);
 
+    printf(\n);
 
     for (long i = 0; i < validRacer; i++) {
-
         pthread_create(&threads[i], NULL, racer, (void *)(i + 1));
     }
 
@@ -69,3 +69,22 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+/*
+
+Output4:
+
+gcc Stage4_NumbersAndThreads.c -o 4.out
+./4.out 5
+
+Racer 2 has joined the race!
+Racer 3 has joined the race!
+Racer 1 has joined the race!
+Racer 4 has joined the race!
+Racer 5 has joined the race!
+
+--- Race Results ---
+Winner: Racer 5
+Global Counter: 1000000
+
+*/
