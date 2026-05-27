@@ -47,11 +47,12 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-    for (int i = 0; i < count; i++) {
-        pthread_join(threads[i], NULL);
-    }
+        for (int i = 0; i < count; i++) {
+            pthread_join(threads[i], NULL);
+        }
 
-    return 0;
+        return 0;
+    }
 }
 
 /*
