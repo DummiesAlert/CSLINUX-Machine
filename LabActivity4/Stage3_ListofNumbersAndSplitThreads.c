@@ -47,16 +47,16 @@ int main(int argc, char *argv[]) {
     int size1 = arrayMiddle;
     int size2 = count - arrayMiddle;
 
-    ThreadNumbers thread1 = { &arrayAllocate[0], size1};
-    ThreadNumbers thread2 = { &arrayAllocate[arrayMiddle], size2};
+    ThreadNumbers threadNumbers1 = { &arrayAllocate[0], size1};
+    ThreadNumbers threadNumbers2 = { &arrayAllocate[arrayMiddle], size2};
 
-    pthread_t thread1, thread2;
+    pthread_t threadNumbers1, threadNumbers2;
 
-    pthread_create(&thread1, NULL, threadWorkerrrrr, (void *)&thread1);
-    pthread_create(&thread2, NULL, threadWorkerrrrr, (void *)&thread2);
+    pthread_create(&threadNumbers1, NULL, threadWorkerrrrr, (void *)&threadNumbers1);
+    pthread_create(&threadNumbers2, NULL, threadWorkerrrrr, (void *)&threadNumbers2);
 
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
+    pthread_join(threadNumbers1, NULL);
+    pthread_join(threadNumbers2, NULL);
 
     int *sortedArray = malloc(count * sizeof(int));
     int i = 0, j = arrayMiddle, k = 0;
