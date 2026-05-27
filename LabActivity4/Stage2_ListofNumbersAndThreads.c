@@ -13,6 +13,7 @@ typedef struct {
 }
 
 ThreadNumbers;
+
 void *countdown(void *arg) {
     ThreadNumbers * number = (ThreadNumbers *)arg;
 
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
         numbers[i].numbers = atoi(argv[i + 1]);
 
         if (numbers[i].numbers < 0 || numbers[i].numbers >= 100) {
-            printf("Number is not less than 100!!!! \nNumber: %d\n", numbers[i].numbers);
+            printf("Number is not less than 100! \nNumber: %d\n", numbers[i].numbers);
             return 1;
         }
 

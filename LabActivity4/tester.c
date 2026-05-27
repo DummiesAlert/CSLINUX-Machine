@@ -1,50 +1,54 @@
-//Question 2:
+// Write a C program which takes list of numbers (all less than 100) for its argument.
+// Then it starts as many threads as there are numbers and in each thread it counts down
+// from the number given to 0, then ends.
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 
-void *printer (void *arg) {
+typedef struct {
+    int threadNumber;
+    int numbers;
+} ThreadNumbers;
 
-    int *data = (int *)arg;
-    int thread_id = data[0];
-    int start_num = data[1];
-
-
-    for (int i = start_num; i >= 0; i--) {
-        printf("Thread %d: %d\n", thread_id, i);
+void *countdown(void *arg) {
+    ThreadNumbers *number = (ThreadNumbers *)arg;
+    for (int i = number->numbers; i >= 0; i--) {
+        printf("Thread %d: %d\n", number->threadNumber, i);
     }
-
     return NULL;
 }
 
-int main (int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s num1 [num2 ...]\n", argv[0]);
+        return 1;
+    }
 
-    int num = argc - 1;
-    pthread_t threads[num];
+    int count = argc - 1;
+    pthread_t threads[count];
+    ThreadNumbers numbers[count];
 
+    for (int i = 0; i < count; i++) {
+        numbers[i].threadNumber = i;
+        numbers[i].numbers = atoi(argv[i + 1]);
 
-    int thread_data[num][2];
-
-    for (long i = 0; i < num; i++) {
-        int val = atoi(argv[i + 1]);
-
-        if (val >= 100) {
-            printf("Error: Number %d is not less than 100\n", val);
+        if (numbers[i].numbers < 0 || numbers[i].numbers >= 100) {
+            printf("Number is not less than 100! \nNumber: %d\n", numbers[i].numbers);
             return 1;
         }
 
-        thread_data[i][0] = i + 1;
-        thread_data[i][1] = val;
+        if (pthread_create(&threads[i], NULL, countdown, &numbers[i]) != 0) {
+            perror("pthread_create");
+            return 1;
+        }
 
-
-        pthread_create(&threads[i], NULL, printer, (void *)thread_data[i]);
-    }
-
-    for (long i = 0; i < num; i++) {
-        pthread_join(threads[i], NULL);
+        // Wait for this thread to finish before creating the next one
+        if (pthread_join(threads[i], NULL) != 0) {
+            perror("pthread_join");
+            return 1;
+        }
     }
 
     return 0;
 }
-
