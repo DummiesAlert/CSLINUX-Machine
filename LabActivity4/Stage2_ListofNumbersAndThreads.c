@@ -18,6 +18,7 @@ void *countdown(void *arg) {
 
     for (int i = number->numbers; i >= 0; i--) {
         printf("Thread %d: %d\n", number->threadNumber, i);
+        sleep(2)
     }
 
     return NULL;
