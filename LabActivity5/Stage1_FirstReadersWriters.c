@@ -40,11 +40,10 @@ void* reader_go(void* arg) {
     pthread_mutex_lock (&readers_lock);
 
     reader_count++;
-    if (reader_count == 1) {
+    if (reader_count == 1)
         pthread_mutex_lock (&writers_lock);
-    }
 
-    pthread_mutex_unlock (&readers_lock);
+        pthread_mutex_unlock (&readers_lock);
 
     // Ended Here ---------------------------------------------------------------------------------------
 
@@ -64,9 +63,8 @@ void* reader_go(void* arg) {
     pthread_mutex_lock (&readers_lock);
 
     reader_count--;
-    if (reader_count == 0) {
+    if (reader_count == 0)
         pthread_mutex_unlock (&writers_lock);
-    }
 
     pthread_mutex_unlock (&readers_lock);
 
