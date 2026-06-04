@@ -23,6 +23,7 @@ pthread_mutex_t readcount_mutex;
 pthread_mutex_t writecount_mutex;
 
 pthread_mutex_t readTry;
+
 pthread_mutex_t reader_mutex;
 pthread_mutex_t writer_mutex;
 
@@ -39,40 +40,40 @@ void* reader_go(void* arg) {
 
 	printf("Reader %d: Starting.\n", thread_arg.ID);
 
-    // Added Here ---------------------------------------------------------------------------------------
-    pthread_mutex_lock (&readTry);
-    pthread_mutex_lock (&reader_mutex);
-    pthread_mutex_lock (&readcount_mutex);
-
-    readcount++;
-    if (readcount == 1)
-        pthread_mutex_lock (&writer_mutex);
-    
-    pthread_mutex_unlock (&readcount_mutex); // is this a unlock
-    pthread_mutex_unlock (&reader_mutex);
-    pthread_mutex_unlock (&readTry);
-    // Ended Here ---------------------------------------------------------------------------------------
-
 	for (int i = 0; i < READER_LOOP; i++) {
+
+		// Added Here ---------------------------------------------------------------------------------------
+		pthread_mutex_lock (&readTry);
+		pthread_mutex_lock (&reader_mutex);
+		pthread_mutex_lock (&readcount_mutex);
+
+		readcount++;
+		if (readcount == 1)
+			pthread_mutex_lock (&writer_mutex);
+		
+		pthread_mutex_unlock (&readcount_mutex); // is this a unlock
+		pthread_mutex_unlock (&reader_mutex);
+		pthread_mutex_unlock (&readTry);
+    	// Ended Here ---------------------------------------------------------------------------------------
 
 		int sleep_time = rand() % SLEEP_MAX;
 		printf("Reader %d: Starting Reading for %d usec\n", 
 				thread_arg.ID,
 				sleep_time);
-		usleep(sleep_time); //usleep takes time in microseconds
+		usleep(sleep_time); // usleep takes time in microseconds
 
 		printf("Reader %d: Done Reading\n", thread_arg.ID);
+
+		// Added Here ---------------------------------------------------------------------------------------
+		pthread_mutex_lock (&readcount_mutex);
+
+		readcount--;
+		if (readcount == 0)
+			pthread_mutex_unlock (&writer_mutex);
+		
+		pthread_mutex_unlock (&readcount_mutex);
+		// Ended Here ---------------------------------------------------------------------------------------
 	}
-
-    // Added Here ---------------------------------------------------------------------------------------
-    pthread_mutex_lock (&readcount_mutex);
-
-    readcount--;
-    if (readcount == 0)
-        pthread_mutex_unlock (&writer_mutex);
-    
-    pthread_mutex_unlock (&readcount_mutex);
-    // Ended Here ---------------------------------------------------------------------------------------
 
 	printf("Reader %d: Finished\n", thread_arg.ID);
 
@@ -87,7 +88,6 @@ void* writer_go(void* arg) {
 	printf("Writer %d: Starting.\n", thread_arg.ID);
 
     // Added Here ---------------------------------------------------------------------------------------
-
     pthread_mutex_lock (&writecount_mutex);
 
     writecount++;
@@ -95,16 +95,13 @@ void* writer_go(void* arg) {
         pthread_mutex_lock (&reader_mutex);
 
     pthread_mutex_unlock (&writecount_mutex);
-
     // Ended Here ---------------------------------------------------------------------------------------
 
 	for (int i = 0; i < WRITER_LOOP; i++) {
 
-        // Added Here ---------------------------------------------------------------------------------------
-        
+        // Added Here -----------------------------------------------------------------------------------
         pthread_mutex_lock (&writer_mutex);
-        
-        // Ended Here ---------------------------------------------------------------------------------------
+        // Ended Here -----------------------------------------------------------------------------------
 
 		int sleep_time = rand() % SLEEP_MAX;
 		printf("Writer %d: Starting writing for %d usec\n", 
@@ -114,15 +111,12 @@ void* writer_go(void* arg) {
 
 		printf("Writer %d: Done writing\n", thread_arg.ID);
 
-        // Added Here ---------------------------------------------------------------------------------------
-        
+        // Added Here -----------------------------------------------------------------------------------
         pthread_mutex_unlock (&writer_mutex);
-        
-        // Ended Here ---------------------------------------------------------------------------------------
+        // Ended Here -----------------------------------------------------------------------------------
 	}
 
     // Added Here ---------------------------------------------------------------------------------------
-    
     pthread_mutex_lock (&writecount_mutex);
     
     writecount--;
@@ -130,7 +124,6 @@ void* writer_go(void* arg) {
         pthread_mutex_unlock (&reader_mutex);
     
     pthread_mutex_unlock (&writecount_mutex);
-    
     // Ended Here ---------------------------------------------------------------------------------------
 
 	printf("Writer %d: Finished\n", thread_arg.ID);
