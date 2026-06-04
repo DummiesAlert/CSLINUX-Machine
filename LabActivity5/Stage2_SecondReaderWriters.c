@@ -26,8 +26,8 @@ pthread_mutex_t readTry;
 pthread_mutex_t reader_mutex;
 pthread_mutex_t writer_mutex;
 
-int reader_count = 0;
-int writer_count = 0;
+int readcount = 0;
+int writecount = 0;
 
 typedef struct {
 	int ID;
@@ -44,8 +44,8 @@ void* reader_go(void* arg) {
     pthread_mutex_lock (&reader_mutex);
     pthread_mutex_lock (&readcount_mutex);
 
-    reader_count++;
-    if (reader_count == 1)
+    readcount++;
+    if (readcount == 1)
         pthread_mutex_lock (&writer_mutex);
     
     pthread_mutex_lock (&readcount_mutex);
@@ -68,8 +68,8 @@ void* reader_go(void* arg) {
     // Added Here ---------------------------------------------------------------------------------------
     pthread_mutex_lock (&readcount_mutex);
 
-    reader_count--;
-    if (reader_count == 0)
+    readcount--;
+    if (readcount == 0)
         pthread_mutex_unlock (&writer_mutex);
     
     pthread_mutex_unlock (&readcount_mutex);
@@ -91,8 +91,8 @@ void* writer_go(void* arg) {
 
     pthread_mutex_lock (&writecount_mutex);
 
-    writer_count++;
-    if (writer_count == 1)
+    writecount++;
+    if (writecount == 1)
         pthread_mutex_lock (&reader_mutex);
 
     pthread_mutex_unlock (&writecount_mutex);
@@ -126,8 +126,8 @@ void* writer_go(void* arg) {
     
     pthread_mutex_lock (&writecount_mutex);
     
-    writer_count--;
-    if (writer_count == 0)
+    writecount--;
+    if (writecount == 0)
         pthread_mutex_unlock (&reader_mutex);
     
     pthread_mutex_unlock (&writecount_mutex);
