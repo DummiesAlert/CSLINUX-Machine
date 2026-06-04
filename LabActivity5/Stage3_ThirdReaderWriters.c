@@ -19,8 +19,9 @@
 #define WRITER_LOOP 3
 
 
-pthread_mutex_t readers_lock;
-pthread_mutex_t writers_lock;
+pthread_mutex_t resource;
+pthread_mutex_t rmutex;
+pthread_mutex_t serviceQueue;
 
 int reader_count = 0;
 
@@ -34,6 +35,20 @@ void* reader_go(void* arg) {
 
 	printf("Reader %d: Starting.\n", thread_arg.ID);
 
+    // Added Here ---------------------------------------------------------------------------------------
+    
+    pthread_mutex_lock (&serviceQueue);
+    pthread_mutex_lock (&rmutex);
+
+    reader_count++;
+    if (reader_count == 1)
+        pthread_mutex_lock (&resource);
+    
+    pthread_mutex_unlock (&serviceQueue);
+    pthread_mutex_unlock (&rmutex);
+    
+    // Ended Here ---------------------------------------------------------------------------------------
+
 	for (int i = 0; i < READER_LOOP; i++) {
 
 		int sleep_time = rand() % SLEEP_MAX;
@@ -45,6 +60,17 @@ void* reader_go(void* arg) {
 		printf("Reader %d: Done Reading\n", thread_arg.ID);
 	}
 
+    // Added Here ---------------------------------------------------------------------------------------
+    
+    pthread_mutex_lock (&rmutex);
+
+    reader_count--;
+    if (reader_count == 0)
+        pthread_mutex_unlock (&resource);
+    
+    pthread_mutex_unlock (&rmutex);
+    
+    // Ended Here ---------------------------------------------------------------------------------------
 	printf("Reader %d: Finished\n", thread_arg.ID);
 
 	return NULL;
@@ -57,6 +83,14 @@ void* writer_go(void* arg) {
 
 	printf("Writer %d: Starting.\n", thread_arg.ID);
 
+    // Added Here ---------------------------------------------------------------------------------------
+    
+    pthread_mutex_lock (&serviceQueue);
+    pthread_mutex_lock (&resource);
+    pthread_mutex_unlock (&serviceQueue);
+
+    // Ended Here ---------------------------------------------------------------------------------------
+
 	for (int i = 0; i < WRITER_LOOP; i++) {
 
 		int sleep_time = rand() % SLEEP_MAX;
@@ -68,6 +102,11 @@ void* writer_go(void* arg) {
 		printf("Writer %d: Done writing\n", thread_arg.ID);
 	}
 
+    // Added Here ---------------------------------------------------------------------------------------
+    
+    pthread_mutex_unlock (&resource);
+    
+    // Ended Here ---------------------------------------------------------------------------------------
 	printf("Writer %d: Finished\n", thread_arg.ID);
 
 	return NULL;
@@ -80,8 +119,8 @@ int main(int argc, char *agarv[]) {
 
 	srand(time(NULL)); // seeding randomizer
 
-	pthread_mutex_init(&readers_lock, NULL);
-	pthread_mutex_init(&writers_lock, NULL);
+	pthread_mutex_init(&resource, NULL);
+	pthread_mutex_init(&serviceQueue, NULL);
 
 	pthread_t reader_threads[READER_COUNT];
 	thread_arg_t reader_args[READER_COUNT];
