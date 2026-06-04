@@ -120,6 +120,7 @@ int main(int argc, char *agarv[]) {
 	srand(time(NULL)); // seeding randomizer
 
 	pthread_mutex_init(&resource, NULL);
+    pthread_mutex_init(&rmutex, NULL);
 	pthread_mutex_init(&serviceQueue, NULL);
 
 	pthread_t reader_threads[READER_COUNT];
