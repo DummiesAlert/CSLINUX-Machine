@@ -147,6 +147,9 @@ int main(int argc, char *agarv[]) {
 
 	pthread_mutex_init(&readcount_mutex, NULL);
 	pthread_mutex_init(&writecount_mutex, NULL);
+    pthread_mutex_init(&readTry, NULL);
+    pthread_mutex_init(&reader_mutex, NULL);
+    pthread_mutex_init(&writer_mutex, NULL);
 
 	pthread_t reader_threads[READER_COUNT];
 	thread_arg_t reader_args[READER_COUNT];
