@@ -37,10 +37,10 @@ void* reader_go(void* arg) {
 
     reader_count++;
     if (reader_count == 1) {
-        pthread_mutex_lock (&readers_lock);
+        pthread_mutex_lock (&writers_lock);
     }
 
-    pthread_mutex_unlock (&writers_lock);
+    pthread_mutex_unlock (&readers_lock);
 
 	printf("Reader %d: Starting.\n", thread_arg.ID);
 
