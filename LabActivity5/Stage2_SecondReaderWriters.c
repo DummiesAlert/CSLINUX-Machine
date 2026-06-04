@@ -19,12 +19,12 @@
 #define WRITER_LOOP 3
 
 
-pthread_mutex_t readercount_mutex;
+pthread_mutex_t readcount_mutex;
 pthread_mutex_t writecount_mutex;
 
 pthread_mutex_t readTry;
-pthread_mutex_t readerCount;
-pthread_mutex_t writerCount;
+pthread_mutex_t reader_mutex;
+pthread_mutex_t writer_mutex;
 
 int reader_count = 0;
 int writer_count = 0;
@@ -41,15 +41,15 @@ void* reader_go(void* arg) {
 
     // Added Here ---------------------------------------------------------------------------------------
     pthread_mutex_lock (&readTry);
-    pthread_mutex_lock (&readercount_mutex);
-    pthread_mutex_lock (&readerCount);
+    pthread_mutex_lock (&reader_mutex);
+    pthread_mutex_lock (&readcount_mutex);
 
     reader_count++;
     if (reader_count == 1)
-        pthread_mutex_lock (&writecount_mutex);
+        pthread_mutex_lock (&writer_mutex);
     
-    pthread_mutex_lock (&readerCount);
-    pthread_mutex_unlock (&readercount_mutex);
+    pthread_mutex_lock (&readcount_mutex);
+    pthread_mutex_unlock (&reader_mutex);
 
     pthread_mutex_unlock (&readTry);
     // Ended Here ---------------------------------------------------------------------------------------
@@ -66,13 +66,13 @@ void* reader_go(void* arg) {
 	}
 
     // Added Here ---------------------------------------------------------------------------------------
-    pthread_mutex_lock (&readerCount);
+    pthread_mutex_lock (&readcount_mutex);
 
     reader_count--;
     if (reader_count == 0)
-        pthread_mutex_unlock (&writecount_mutex);
+        pthread_mutex_unlock (&writer_mutex);
     
-    pthread_mutex_unlock (&readerCount);
+    pthread_mutex_unlock (&readcount_mutex);
     // Ended Here ---------------------------------------------------------------------------------------
 
 	printf("Reader %d: Finished\n", thread_arg.ID);
@@ -89,13 +89,13 @@ void* writer_go(void* arg) {
 
     // Added Here ---------------------------------------------------------------------------------------
 
-    pthread_mutex_lock (&writerCount);
+    pthread_mutex_lock (&writecount_mutex);
 
     writer_count++;
     if (writer_count == 1)
-        pthread_mutex_lock (&readercount_mutex);
+        pthread_mutex_lock (&reader_mutex);
 
-    pthread_mutex_unlock (&writerCount);
+    pthread_mutex_unlock (&writecount_mutex);
 
     // Ended Here ---------------------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ void* writer_go(void* arg) {
 
         // Added Here ---------------------------------------------------------------------------------------
         
-        pthread_mutex_lock (&writerCount);
+        pthread_mutex_lock (&writer_mutex);
         
         // Ended Here ---------------------------------------------------------------------------------------
 
@@ -117,20 +117,20 @@ void* writer_go(void* arg) {
 
         // Added Here ---------------------------------------------------------------------------------------
         
-        pthread_mutex_unlock (&writerCount);
+        pthread_mutex_unlock (&writer_mutex);
         
         // Ended Here ---------------------------------------------------------------------------------------
 	}
 
     // Added Here ---------------------------------------------------------------------------------------
     
-    pthread_mutex_lock (&writerCount);
+    pthread_mutex_lock (&writecount_mutex);
     
     writer_count--;
     if (writer_count == 0)
-        pthread_mutex_unlock (&readercount_mutex);
+        pthread_mutex_unlock (&reader_mutex);
     
-    pthread_mutex_unlock (&writerCount);
+    pthread_mutex_unlock (&writecount_mutex);
     
     // Ended Here ---------------------------------------------------------------------------------------
 
@@ -146,7 +146,7 @@ int main(int argc, char *agarv[]) {
 
 	srand(time(NULL)); // seeding randomizer
 
-	pthread_mutex_init(&readercount_mutex, NULL);
+	pthread_mutex_init(&readcount_mutex, NULL);
 	pthread_mutex_init(&writecount_mutex, NULL);
 
 	pthread_t reader_threads[READER_COUNT];
