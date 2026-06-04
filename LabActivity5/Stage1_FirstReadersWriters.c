@@ -43,7 +43,7 @@ void* reader_go(void* arg) {
     if (reader_count == 1)
         pthread_mutex_lock (&writers_lock);
 
-        pthread_mutex_unlock (&readers_lock);
+    pthread_mutex_unlock (&readers_lock);
 
     // Ended Here ---------------------------------------------------------------------------------------
 
@@ -80,6 +80,7 @@ void* writer_go(void* arg) {
 
 	thread_arg_t thread_arg = *(thread_arg_t*) arg;
 
+    // Added Here ---------------------------------------------------------------------------------------
     pthread_mutex_lock (&writers_lock);
 
 	printf("Writer %d: Starting.\n", thread_arg.ID);
@@ -94,6 +95,9 @@ void* writer_go(void* arg) {
 
 		printf("Writer %d: Done writing\n", thread_arg.ID);
 	}
+
+    // Added Here ---------------------------------------------------------------------------------------
+    pthread_mutex_unlock (&writers_lock);
 
 	printf("Writer %d: Finished\n", thread_arg.ID);
 
