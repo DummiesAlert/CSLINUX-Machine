@@ -48,9 +48,8 @@ void* reader_go(void* arg) {
     if (readcount == 1)
         pthread_mutex_lock (&writer_mutex);
     
-    pthread_mutex_lock (&readcount_mutex);
+    pthread_mutex_unlock (&readcount_mutex); // is this a unlock
     pthread_mutex_unlock (&reader_mutex);
-
     pthread_mutex_unlock (&readTry);
     // Ended Here ---------------------------------------------------------------------------------------
 
