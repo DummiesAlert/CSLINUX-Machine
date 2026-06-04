@@ -33,6 +33,10 @@ void* reader_go(void* arg) {
 
 	thread_arg_t thread_arg = *(thread_arg_t*) arg;
 
+	printf("Reader %d: Starting.\n", thread_arg.ID);
+
+    // Added Here ---------------------------------------------------------------------------------------
+
     pthread_mutex_lock (&readers_lock);
 
     reader_count++;
@@ -42,7 +46,7 @@ void* reader_go(void* arg) {
 
     pthread_mutex_unlock (&readers_lock);
 
-	printf("Reader %d: Starting.\n", thread_arg.ID);
+    // Ended Here ---------------------------------------------------------------------------------------
 
 	for (int i = 0; i < READER_LOOP; i++) {
 
@@ -55,6 +59,8 @@ void* reader_go(void* arg) {
 		printf("Reader %d: Done Reading\n", thread_arg.ID);
 	}
 
+    // Added Here ---------------------------------------------------------------------------------------
+
     pthread_mutex_lock (&readers_lock);
 
     reader_count--;
@@ -63,6 +69,8 @@ void* reader_go(void* arg) {
     }
 
     pthread_mutex_unlock (&readers_lock);
+
+    // Ended Here ---------------------------------------------------------------------------------------
 
 	printf("Reader %d: Finished\n", thread_arg.ID);
 
