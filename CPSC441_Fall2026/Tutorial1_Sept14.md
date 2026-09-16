@@ -1,11 +1,11 @@
-Socket Programming
+Socket Programming 1
 
 Review TCP/IP Internet Layered Architecture, ____________ Layers
     [5] Physical, Binary numbers
     [4] Data Link, think of Nodes, header has MAC addresses
     [3] Network, think of Nodes, header has the IP/Logical addresses and how to get to the destination (HOPS between routers)
     [2] Transport, think of Nodes, header has the Port numbers
-    [1] Application, Google.com -> port numbers
+    [1] Application, Google.com -> port numbers (8-bits)
 
 Port Numbers - Processes
 Logical Address - Internet Protocol Address
@@ -37,3 +37,5 @@ Ports
     Try to Memorize:
         HTTP: 80
         HTTPS: 443
+        FTP: 21
+        SMTP: 25
