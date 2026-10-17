@@ -67,7 +67,7 @@ def main():
             return
         print(ready_message)
 
-        print("Commands: list | GET filename | exit")
+        print("Commands: list | a message | GET filename | exit")
         while True:
             message = input(client_name + "> ")
             conn.sendall((message + "\n").encode("utf-8"))

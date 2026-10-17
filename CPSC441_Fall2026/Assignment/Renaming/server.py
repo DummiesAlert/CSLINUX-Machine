@@ -7,10 +7,7 @@ MAX_CLIENTS = 3
 BUFFER_SIZE = 4096
 
 # Directory where downloadable server files are stored.
-FOLDR = "files"
-
-# Edit this list to match the files placed in the FOLDR directory.
-# Example: create FOLDR/example.txt and keep "example.txt" in this list.
+FOLDR = "repo"
 FOLDR_FILES = ["example.txt"]
 
 # Active clients and the session cashe is locked by threading.Lock()
@@ -122,12 +119,11 @@ def handle_client(conn, address, client_name):
             
             # If client wants to exit
             if command.lower() == "exit":
-                send_line(conn, "Connection closed. Goodbye!" + client_name)
+                send_line(conn, "Connection closed. Goodbye! " + client_name)
                 break
             
             # If client wants to list the files in server
             elif command.lower() == "list":
-                send_line(conn, "List of files in server: ")
                 send_file_list(conn)
             
             # If client wants to get a file from server
