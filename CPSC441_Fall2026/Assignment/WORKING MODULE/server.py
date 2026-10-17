@@ -1,11 +1,11 @@
 import socket
 import threading
 
-HOST = "0.0.0.0"
-PORT = 5000
+HOST = socket.gethostbyname(socket.gethostname())
+PORT = 6767
 MAX_CLIENTS = 3
 BUFFER_SIZE = 4096
-REPOSITORY = "repository"
+FOLDR = "something"
 
 # Active connections and the session cache are protected by this lock.
 clients_lock = threading.Lock()
@@ -39,34 +39,34 @@ def receive_line(conn, buffer):
 def send_file_list(conn):
     try:
         entries = []
-        # No os/pathlib imports are allowed, so list the repository using
+        # No os/pathlib imports are allowed, so list the FOLDR using
         # a small socket-free directory listing via a shell is not suitable.
-        # The repository file list is maintained explicitly below instead.
-        for name in REPOSITORY_FILES:
+        # The FOLDR file list is maintained explicitly below instead.
+        for name in FOLDR_FILES:
             entries.append(name)
         if entries:
             send_line(conn, "FILES " + " | ".join(entries))
         else:
-            send_line(conn, "FILES (repository is empty)")
+            send_line(conn, "FILES (FOLDR is empty)")
     except Exception:
-        send_line(conn, "ERROR Could not list repository files.")
+        send_line(conn, "ERROR Could not list FOLDR files.")
 
 
 def stream_file(conn, filename):
     # Only names listed here are accessible. This prevents path traversal.
-    if filename not in REPOSITORY_FILES:
+    if filename not in FOLDR_FILES:
         send_line(conn, "ERROR File not found: " + filename)
         return
 
     try:
-        file_handle = open(REPOSITORY + "/" + filename, "rb")
+        file_handle = open(FOLDR + "/" + filename, "rb")
         file_handle.close()
     except OSError:
         send_line(conn, "ERROR File not found: " + filename)
         return
 
     try:
-        file_handle = open(REPOSITORY + "/" + filename, "rb")
+        file_handle = open(FOLDR + "/" + filename, "rb")
         with file_handle:
             # Header announces a binary transfer and exact byte count.
             file_handle.seek(0, 2)
@@ -95,7 +95,7 @@ def handle_client(conn, address, client_name):
             send_line(conn, "ERROR Client name handshake failed.")
             return
 
-        send_line(conn, "READY Use list, a repository filename, a message, or exit.")
+        send_line(conn, "READY Use list, a FOLDR filename, a message, or exit.")
 
         while True:
             message, buffer = receive_line(conn, buffer)
@@ -110,7 +110,7 @@ def handle_client(conn, address, client_name):
                 send_file_list(conn)
             elif command.startswith("GET "):
                 stream_file(conn, command[4:].strip())
-            elif command in REPOSITORY_FILES:
+            elif command in FOLDR_FILES:
                 stream_file(conn, command)
             else:
                 send_line(conn, "ACK " + message)
@@ -136,11 +136,11 @@ def handle_client(conn, address, client_name):
 def main():
     global next_client_number
 
-    # Create the repository if it does not exist. With the import restriction,
+    # Create the FOLDR if it does not exist. With the import restriction,
     # create this directory manually before starting the server.
-    print("Repository directory: " + REPOSITORY)
+    print("FOLDR directory: " + FOLDR)
     print("Put downloadable files in that directory and add their names to")
-    print("REPOSITORY_FILES in server.py.")
+    print("FOLDR_FILES in server.py.")
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -197,10 +197,9 @@ def main():
             print(record)
 
 
-# Edit this list to match the files placed in the repository directory.
-# Example: create repository/example.txt and keep "example.txt" in this list.
-REPOSITORY_FILES = ["example.txt"]
-
+# Edit this list to match the files placed in the FOLDR directory.
+# Example: create FOLDR/example.txt and keep "example.txt" in this list.
+FOLDR_FILES = ["example.txt"]
 
 if __name__ == "__main__":
     main()

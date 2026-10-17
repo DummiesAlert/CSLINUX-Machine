@@ -1,10 +1,9 @@
 import socket
 import threading
 
-SERVER_HOST = "127.0.0.1"
-SERVER_PORT = 5000
+SERVER_HOST = socket.gethostbyname(socket.gethostname())
+SERVER_PORT = 6767
 BUFFER_SIZE = 4096
-
 
 def receive_line(conn, buffer):
     while b"\n" not in buffer:
@@ -117,7 +116,6 @@ def main():
             conn.close()
         except OSError:
             pass
-
 
 if __name__ == "__main__":
     main()
