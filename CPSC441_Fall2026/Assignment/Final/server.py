@@ -2,7 +2,7 @@ import socket
 import threading
 import os
 
-HOST = socket.gethostbyname(socket.gethostname())
+SERVER_HOST = socket.gethostbyname(socket.gethostname())
 PORT = 6767
 MAX_CLIENTS = 3
 BUFFER_SIZE = 4096
@@ -28,11 +28,11 @@ def session_login_time():
     return "session-time=" + str(round(threading._time(), 3))
 
 # Set Send Message type
-def send_line(conn, message):
+def send_message(conn, message):
     conn.sendall((message + "\n").encode("utf-8"))
 
 # Receive Message type
-def receive_line(conn, buffer):
+def recieve_message(conn, buffer):
     # Create a Buffer to wait for all the data
     while b"\n" not in buffer:
         complete = conn.recv(BUFFER_SIZE)
@@ -65,13 +65,13 @@ def send_file_list(conn):
 
         # Return files in Repo, unless it is empty
         if current_files:
-            send_line(conn, "FILES " + " | ".join(current_files))
+            send_message(conn, "FILES " + " | ".join(current_files))
         else:
-            send_line(conn, "FILES WARNING! There are not files in REPO")
+            send_message(conn, "FILES WARNING! There are not files in REPO")
     
     # Catch any unexpected errors
     except Exception:
-        send_line(conn, "ERROR - Could not retrieve file(s) list.")
+        send_message(conn, "ERROR - Could not retrieve file(s) list.")
 
 # "Stream" or Send file to Client
 def stream_file(conn, filename):
@@ -81,7 +81,7 @@ def stream_file(conn, filename):
         path = os.path.join(REPO, filename)
         
         if not os.path.isfile(path):
-            send_line(conn, f"ERROR File not found: {filename}")
+            send_message(conn, f"ERROR File not found: {filename}")
             return
         
         with open(path, "rb") as file_handling:
@@ -91,7 +91,7 @@ def stream_file(conn, filename):
             file_size = file_handling.tell()
             file_handling.seek(0)
             
-            send_line(conn, f"FILE {filename} {str(file_size)}")
+            send_message(conn, f"FILE {filename} {str(file_size)}")
             
             while True:
                 data = file_handling.read(BUFFER_SIZE)
@@ -102,7 +102,7 @@ def stream_file(conn, filename):
     # If file can not read
     except OSError:
         try:
-            send_line(conn, "ERROR Could not read file.")
+            send_message(conn, "ERROR Could not read file.")
         
         except OSError:
             pass
@@ -115,20 +115,20 @@ def handle_client(conn, address, client_name):
     try:
 
         # Welcome the client
-        send_line(conn, f"WELCOME {client_name}")
+        send_message(conn, f"WELCOME {client_name}")
         
         # Get Client Name to verify
-        received_name, buffer = receive_line(conn, buffer)
+        received_name, buffer = recieve_message(conn, buffer)
         if received_name != client_name:
-            send_line(conn, "ERROR {client_name} connection failed.")
+            send_message(conn, "ERROR {client_name} connection failed.")
             return
 
         # Client is connected
-        send_line(conn, f"{client_name} CONNECTED to {HOST}: {str(PORT)}! Use list to list files, GET server files, send any message, or exit.")
+        send_message(conn, f"{client_name} CONNECTED to {SERVER_HOST}: {str(PORT)}! Use list to list files, GET server files, send any message, or exit.")
 
         # Things Client can do
         while True:
-            message, buffer = receive_line(conn, buffer)
+            message, buffer = recieve_message(conn, buffer)
             
             # If no message recieved, break
             if message is None:
@@ -139,7 +139,7 @@ def handle_client(conn, address, client_name):
             
             # If client wants to exit, break
             if command.lower() == "exit":
-                send_line(conn, f"Connection closed. Goodbye {client_name}!")
+                send_message(conn, f"Connection closed. Goodbye {client_name}!")
                 break
             
             # If client wants to list the files
@@ -152,7 +152,7 @@ def handle_client(conn, address, client_name):
             
             # If client sends any message
             else:
-                send_line(conn, f"Server ACK - {message}")
+                send_message(conn, f"Server ACK - {message}")
 
     # Catch any other unexpected errors
     finally:
@@ -180,6 +180,7 @@ def handle_client(conn, address, client_name):
                     break
         
         # Print successful disconnect
+        print(f"Current Active Clients {active_clients}")
         print(f"{client_name} disconnected from {str(address)} at {disconnect}")
 
 def main():
@@ -190,10 +191,10 @@ def main():
     # Initiate Socket
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind((HOST, PORT))
+    server.bind((SERVER_HOST, PORT))
     server.listen()
     
-    print(f"Server listening on {HOST}: {str(PORT)}")
+    print(f"Server listening on {SERVER_HOST}: {str(PORT)}")
     print(f"Maximum of simultaneous clients: {str(MAX_CLIENTS)}")
 
     try:
@@ -202,7 +203,7 @@ def main():
             with clients_lock:
                 if len(active_clients) >= MAX_CLIENTS:
                     try:
-                        send_line(conn, "SERVER IS FULL: MAXIMUM OF THREE CLIENTS REACHED!! PLEASE TRY AGAIN LATER.")
+                        send_message(conn, "SERVER IS FULL: MAXIMUM OF THREE CLIENTS REACHED!! PLEASE TRY AGAIN LATER.")
                     except OSError:
                         pass
                     conn.close()
@@ -221,6 +222,7 @@ def main():
                     "disconnect": None
                 })
 
+            print(f"Current Active Clients {active_clients}")
             print(f"{client_name} connected from {address} at {accepted}")
             
             threading.Thread(target=handle_client, args=(conn, address, client_name), daemon=True).start()
